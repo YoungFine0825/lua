@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(lua)
 
-option(LUA_BUILD_SHARED "Build shared library" ON)
-option(LUA_BUILD_STATIC "Build static library" OFF)
+option(LUA_BUILD_SHARED "Build shared library" OFF)
+option(LUA_BUILD_STATIC "Build static library" ON)
 option(LUA_BUILD_EXE "Build lua stand-alone interpreter" ON)
 
 set(LUA_SRC
@@ -61,6 +61,13 @@ if (LUA_BUILD_SHARED)
 		set_property(TARGET ${LUA_LIB_NAME} PROPERTY COMPILE_DEFINITIONS LUA_BUILD_AS_DLL=1)
 	endif()
 	#install(TARGETS ${LUA_LIB_NAME} RUNTIME DESTINATION . LIBRARY DESTINATION .)
+endif()
+
+#Linux下使用GCC编译器需要显示链接数学库
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "GUN")
+        target_link_libraries(${LUA_LIB_NAME} m)#链接数学库
+    endif()
 endif()
 
 if(LUA_BUILD_EXE)
